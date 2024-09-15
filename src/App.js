@@ -1,33 +1,39 @@
-import { Card } from "./components/Card"; // Certifique-se de importar o componente Card
+import { useEffect, useState } from "react";
+import { Card } from "./components/Card";
 import { Header } from "./components/Header";
+import { ServiceConfig } from "./services/ServiceConfig";
 
 function App() {
+  const serviceConfig = new ServiceConfig();
+
+  const [posts, setPosts] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const response = await serviceConfig.get("/posts");
+      const data = response.data;
+      setPosts(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <div className="App">
       <Header />
       <div className="container">
         <div className="row">
-          <div className="col-md-4">
-            <Card
-              title="Card title"
-              image="https://via.placeholder.com/150"
-              text="Some quick example text to build on the card title and make up the bulk of the card's content."
-            />
-          </div>
-          <div className="col-md-4">
-            <Card
-              title="Card title"
-              image="https://via.placeholder.com/150"
-              text="Some quick example text to build on the card title and make up the bulk of the card's content."
-            />
-          </div>
-          <div className="col-md-4">
-            <Card
-              title="Card title"
-              image="https://via.placeholder.com/150"
-              text="Some quick example text to build on the card title and make up the bulk of the card's content."
-            />
-          </div>
+          {posts.map((post) => (
+            <div className="col-md-4" key={post.id}>
+              <Card title={post.title} text={post.body} image={post.image} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
